@@ -1,0 +1,42 @@
+.header {
+  max-width: 500px;
+  margin: 0 auto 30px auto;
+  padding: 20px 40px;
+  background: #dabcf8;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header__title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: 1px;
+}
+
+.header__button {
+  padding: 10px 24px;
+  background: #7c47b2;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: inherit;
+}
+
+.header__button:hover {
+  transform: translateY(-2px);
+  background: #493c56;
+}
+
+.header__button:active {
+  transform: translateY(0);
+}

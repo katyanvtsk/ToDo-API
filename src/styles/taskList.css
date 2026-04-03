@@ -1,0 +1,48 @@
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin: 0 auto 20px;
+  max-width: 500px;
+  width: 100%;
+  justify-content: center;
+}
+
+.task {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.button-list button:not(:last-child) {
+  margin-right: 15px;
+}
+
+.button__all {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.button__all:hover {
+  background-color: #bbdef5;
+}
+
+.button__active {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.button__active:hover {
+  background-color: #c8e6c9;
+}
+
+.button__completed {
+  background-color: #fce4ec;
+  color: #c2185b;
+}
+
+.button__completed:hover {
+  background-color: #f8bbd0;
+}

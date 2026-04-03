@@ -1,0 +1,43 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", "Roboto", sans-serif;
+}
+
+.errorText {
+  color: red;
+  margin-top: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+button {
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f0f0f0;
+  color: #666;
+  outline: none;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  background-color: #c5e8ff;
+}
+
+button.active {
+  border: 2px solid #094786;
+}
+
+input {
+  padding: 6px 10px;
+  font-size: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  outline: none;
+}

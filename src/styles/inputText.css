@@ -1,0 +1,22 @@
+.inputText {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.inputText__wrapper {
+  display: flex;
+  gap: 10px;
+  margin: 0 auto;
+}
+
+.inputText__input:focus {
+  border-color: #4c9aff;
+  box-shadow: 0 0 0 2px rgba(76, 154, 255, 0.1);
+}
+
+.inputText__input::placeholder {
+  color: #999;
+  font-size: 14px;
+}
