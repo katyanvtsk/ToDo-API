@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { logIn } from "../server/apiTodo.js";
 import { Input, Radio } from "antd";
 import "../styles/Register.css";
 import "../styles/base.css";
+import { useNavigate } from "react-router";
 
 const RegistrationForm = () => {
   const [errorServer, setErrorServer] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const {
     handleSubmit,
     control,
@@ -17,24 +20,13 @@ const RegistrationForm = () => {
     setLoading(true);
     try {
       const data = { ...formData, age: parseInt(formData.age) };
-      const response = await fetch(
-        "https://todo-redev.herokuapp.com/api/users/register",
-        {
-          method: "POST",
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        },
-      );
+      const res = await logIn.register(data);
 
-      if (response.ok) {
-        const res = await response.json();
+      if (res) {
         console.log(res);
+        navigate("/login");
       } else {
-        const errorData = await response.json();
-        setErrorServer(errorData.message);
+        setErrorServer("Ошибка регистрации");
       }
     } catch (error) {
       console.log(error);

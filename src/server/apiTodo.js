@@ -1,8 +1,48 @@
-import { apiUrl, headers } from "./api";
+const apiUrl = import.meta.env.VITE_API_URL; // https://todo-redev.herokuapp.com/api
+const TOKEN = import.meta.env.VITE_API_TOKEN; //токен
+
+const headers = {
+  accept: "application/json",
+  "Content-Type": "application/json",
+  Authorization: TOKEN,
+};
+
+const logIn = {
+  register: async (data) => {
+    const response = await fetch(`${apiUrl}/users/register`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+    return response.json();
+  },
+
+  log: async (formData) => {
+    const response = await fetch(`${apiUrl}/auth/login`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(formData),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+    return response.json();
+  },
+};
 
 const apiTodo = {
   getTasks: async () => {
     const response = await fetch(`${apiUrl}/todos`, { headers });
+
+    if (!response.ok) {
+      throw new Error(`задача не добавлена, error status: ${response.status}`);
+    }
     return response.json();
   },
 
@@ -11,6 +51,9 @@ const apiTodo = {
       method: "DELETE",
       headers,
     });
+    if (!response.ok) {
+      throw new Error(`задача не удалена, error status: ${response.status}`);
+    }
     return response.json();
   },
 
@@ -19,6 +62,9 @@ const apiTodo = {
       method: "PATCH",
       headers,
     });
+    if (!response.ok) {
+      throw new Error(`задача не выполнена, error status: ${response.status}`);
+    }
     return response.json();
   },
 
@@ -30,21 +76,25 @@ const apiTodo = {
         title: newTitle,
       }),
     });
+    if (!response.ok) {
+      throw new Error(
+        `изменения не сохранены, error status: ${response.status}`,
+      );
+    }
     return response.json();
   },
 
   clearTasks: async (tasks) => {
     const completedTask = tasks.filter((item) => item.isDone);
     const deletedTask = completedTask.map(async (item) => {
-      try {
-        const response = await fetch(`${apiUrl}/todos/${item.id}`, {
-          method: "DELETE",
-          headers,
-        });
-        return response.json();
-      } catch (error) {
-        console.log(error);
+      const response = await fetch(`${apiUrl}/todos/${item.id}`, {
+        method: "DELETE",
+        headers,
+      });
+      if (!response.ok) {
+        throw new Error(`задачи не очищены, error: ${response.status}`);
       }
+      return response.json();
     });
 
     const result = await Promise.all(deletedTask);
@@ -52,4 +102,4 @@ const apiTodo = {
   },
 };
 
-export default apiTodo;
+export { logIn, apiTodo };

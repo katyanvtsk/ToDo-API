@@ -1,9 +1,12 @@
 import { useState, memo } from "react";
+
+import useAuth from "../hooks/useAuth.jsx";
 import "../styles/base.css";
 import "../styles/inputText.css";
 
 const InputText = ({ tasks, setTasks }) => {
   console.log("render InputText");
+  const { token } = useAuth();
   const [text, setText] = useState("");
   const [textError, setTextError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,23 +35,21 @@ const InputText = ({ tasks, setTasks }) => {
           headers: {
             accept: "application/json",
             "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImthdHlhQGdtYWlsLmNvbSIsImlkIjoyMzg1LCJpYXQiOjE3NzQ4NzMzNTV9.ODiDsMqi-rlszCmPUsHdyYWpfErCfeOraMQQzI7U5vA",
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            title: text,
-          }),
+          body: JSON.stringify({ title: text }),
         },
       );
-
-      const data = await response.json();
-      setTasks([...tasks, data]);
-      console.log(tasks);
-
-      setText("");
-      setTextError(false);
+      if (response.ok) {
+        const data = await response.json();
+        setTasks([...tasks, data]);
+        setText("");
+        setTextError(false);
+      } else {
+        throw new Error(`задача не создана, error status: ${response.status}`);
+      }
     } catch (error) {
-      console.log("Не удалось загрузить задачу...", error);
+      console.log("Не удалось создать задачу...", error);
     }
     setIsLoading(false);
   };

@@ -7,7 +7,7 @@ import { Route, Routes, Link } from "react-router";
 import RegistrationForm from "./components/RegistrationForm.jsx";
 import Login from "./components/Login.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
-import apiTodo from "./server/apiTodo.js";
+import { apiTodo } from "./server/apiTodo.js";
 import "./styles/App.css";
 
 function App() {

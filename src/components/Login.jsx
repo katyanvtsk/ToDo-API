@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Input } from "antd";
+import { logIn } from "../server/apiTodo.js";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth.jsx";
 import "../styles/Register.css";
@@ -21,32 +22,17 @@ const Login = () => {
   const onSubmit = async (formData) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        "https://todo-redev.herokuapp.com/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        },
-      );
-      if (response.ok) {
-        const res = await response.json(); //токен пришёл
+      const res = await logIn.log(formData);
 
-        if (res.token) {
-          saveToken(res.token);
-          navigate("/");
-        } else {
-          setErrorServer("Токен не получен");
-        }
+      if (res.token) {
+        saveToken(res.token);
+        navigate("/");
       } else {
-        const errorData = await response.json();
-        setErrorServer(errorData.message);
+        setErrorServer("Токен не получен");
       }
     } catch (error) {
       console.log(error);
+      setErrorServer(error.message);
     }
     setLoading(false);
   };
