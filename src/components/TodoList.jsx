@@ -2,17 +2,20 @@ import { useState, memo } from "react";
 import Task from "./Task";
 import "../styles/base.css";
 import "../styles/taskList.css";
+import { useDispatch, useSelector } from "react-redux";
+import { selectFilter, setFilter } from "../redux/slices/filterSlice";
 
-const TodoList = ({ tasks = [], deleteTask, isDoneCheck, editTask }) => {
+const TodoList = ({ tasks, deleteTask, editTask, isDoneCheck }) => {
   console.log("render TodoList");
 
-  const [filter, setFilter] = useState("all"); //all, active, completed
+  const filter = useSelector(selectFilter);
+  const dispatch = useDispatch();
 
   const filteredTask = tasks.filter((item) => {
     if (filter === "active") {
-      return !item.isDone;
+      return !item.isCompleted;
     } else if (filter === "completed") {
-      return item.isDone;
+      return item.isCompleted;
     }
     return true;
   });
@@ -32,19 +35,19 @@ const TodoList = ({ tasks = [], deleteTask, isDoneCheck, editTask }) => {
       <div className="button-list">
         <button
           className={`button__all ${filter === "all" ? "active" : ""}`}
-          onClick={() => setFilter("all")}
+          onClick={() => dispatch(setFilter("all"))}
         >
           Все
         </button>
         <button
           className={`button__active ${filter === "active" ? "active" : ""}`}
-          onClick={() => setFilter("active")}
+          onClick={() => dispatch(setFilter("active"))}
         >
           Активные
         </button>
         <button
           className={`button__completed ${filter === "completed" ? "active" : ""}`}
-          onClick={() => setFilter("completed")}
+          onClick={() => dispatch(setFilter("completed"))}
         >
           Завершённые
         </button>

@@ -1,57 +1,35 @@
 import { useState, memo } from "react";
-
-import useAuth from "../hooks/useAuth.jsx";
 import "../styles/base.css";
 import "../styles/inputText.css";
+import { useDispatch, useSelector } from "react-redux";
+import { change } from "../redux/slices/inputTextSlice.js";
+import { useAddTask } from "../hooks/useTasks.js";
 
-const InputText = ({ tasks, setTasks }) => {
-  console.log("render InputText");
-  const { token } = useAuth();
-  const [text, setText] = useState("");
+const InputText = () => {
+  const text = useSelector((store) => store.inputText.text);
+  const dispatch = useDispatch();
+
   const [textError, setTextError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const value = e.target.value;
-    setText(value);
+    dispatch(change(value));
 
     if (value.trim().length > 0) {
       setTextError(false);
     }
   };
 
+  const addMutation = useAddTask();
+  const { isPending, isError, error } = addMutation;
   const addTask = async () => {
-    if (text.trim().length === 0) {
+    const trimText = text.trim();
+
+    if (!trimText) {
       setTextError(true);
       return;
     }
-
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        "https://todo-redev.herokuapp.com/api/todos",
-        {
-          method: "POST",
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ title: text }),
-        },
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setTasks([...tasks, data]);
-        setText("");
-        setTextError(false);
-      } else {
-        throw new Error(`задача не создана, error status: ${response.status}`);
-      }
-    } catch (error) {
-      console.log("Не удалось создать задачу...", error);
-    }
-    setIsLoading(false);
+    addMutation.mutate(trimText);
   };
 
   const handleClick = () => {
@@ -79,8 +57,8 @@ const InputText = ({ tasks, setTasks }) => {
           Добавить
         </button>
       </div>
-
-      {isLoading && <p>Загрузка...</p>}
+      {isPending && <p>Добавление задачи...</p>}
+      {isError && <p>{error.message}</p>}
       {textError && <p className="errorText">❌ Введите задачу!</p>}
     </div>
   );

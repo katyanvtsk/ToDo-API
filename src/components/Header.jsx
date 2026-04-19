@@ -1,20 +1,19 @@
-import useAuth from "../hooks/useAuth.jsx";
 import { useNavigate } from "react-router";
 import "../styles/base.css";
 import "../styles/header.css";
 
 const Header = () => {
-  const { isAuth, logout } = useAuth();
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
+    localStorage.removeItem("token");
     navigate("/login");
   };
   return (
     <div className="header">
       <h1 className="header__title">Todo List</h1>
-      {isAuth() && (
+      {token && (
         <button
           onClick={handleLogout}
           className="header__button button__logout"

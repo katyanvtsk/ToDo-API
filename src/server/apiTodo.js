@@ -37,6 +37,18 @@ const logIn = {
 };
 
 const apiTodo = {
+  addTask: async (title) => {
+    const response = await fetch(`${apiUrl}/todos`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ title: title }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`задача не создана, error status: ${response.status}`);
+    }
+    return response.json();
+  },
   getTasks: async () => {
     const response = await fetch(`${apiUrl}/todos`, { headers });
 
@@ -68,12 +80,12 @@ const apiTodo = {
     return response.json();
   },
 
-  editTask: async (id, newTitle) => {
+  editTask: async (id, title) => {
     const response = await fetch(`${apiUrl}/todos/${id}`, {
       method: "PATCH",
       headers,
       body: JSON.stringify({
-        title: newTitle,
+        title: title,
       }),
     });
     if (!response.ok) {
@@ -85,7 +97,7 @@ const apiTodo = {
   },
 
   clearTasks: async (tasks) => {
-    const completedTask = tasks.filter((item) => item.isDone);
+    const completedTask = tasks.filter((item) => item.isCompleted);
     const deletedTask = completedTask.map(async (item) => {
       const response = await fetch(`${apiUrl}/todos/${item.id}`, {
         method: "DELETE",

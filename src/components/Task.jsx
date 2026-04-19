@@ -34,15 +34,11 @@ const Task = ({ task, deleteTask, isDoneCheck, editTask }) => {
     }
   };
 
-  const handleEdit = () => {
-    setIsEdit(!isEdit);
-  };
-
   const handleMain = () => {
     if (isEdit) {
       handleSave();
     } else {
-      handleEdit();
+      setIsEdit(!isEdit);
     }
   };
 
@@ -50,7 +46,7 @@ const Task = ({ task, deleteTask, isDoneCheck, editTask }) => {
     <div className="task">
       <input
         type="checkbox"
-        checked={task.isDone}
+        checked={task.isCompleted}
         onChange={() => isDoneCheck(task.id)}
       />
 
@@ -61,7 +57,7 @@ const Task = ({ task, deleteTask, isDoneCheck, editTask }) => {
           onKeyDown={handleKeydown}
         />
       ) : (
-        <p className={task.isDone ? "done" : ""}>{task.title}</p>
+        <p className={task.isCompleted ? "done" : ""}>{task.title}</p>
       )}
 
       <button onClick={handleMain}>{isEdit ? "💾" : "✏️"}</button>

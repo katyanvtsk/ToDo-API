@@ -1,15 +1,14 @@
-import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { logIn } from "../server/apiTodo.js";
+
 import { Input, Radio } from "antd";
 import "../styles/Register.css";
 import "../styles/base.css";
-import { useNavigate } from "react-router";
+
+import { useRegister } from "../hooks/useAuth.js";
 
 const RegistrationForm = () => {
-  const [errorServer, setErrorServer] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const registerMutation = useRegister();
+  const { isPending, isError, error } = registerMutation;
   const {
     handleSubmit,
     control,
@@ -17,21 +16,8 @@ const RegistrationForm = () => {
   } = useForm();
 
   const onSubmit = async (formData) => {
-    setLoading(true);
-    try {
-      const data = { ...formData, age: parseInt(formData.age) };
-      const res = await logIn.register(data);
-
-      if (res) {
-        console.log(res);
-        navigate("/login");
-      } else {
-        setErrorServer("Ошибка регистрации");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    setLoading(false);
+    const data = { ...formData, age: parseInt(formData.age) };
+    registerMutation.mutate(data);
   };
 
   return (
@@ -156,12 +142,9 @@ const RegistrationForm = () => {
         <button type="submit" className="registration-form__button">
           Зарегистрироваться
         </button>
-        {loading && (
-          <p className="registration-form__loading">Регистрация...</p>
-        )}
       </form>
-
-      {errorServer && <p className="registration-form__error">{errorServer}</p>}
+      {isPending && <p>Регитсрация...</p>}
+      {isError && <p className="registration-form__error">{error.message}</p>}
     </div>
   );
 };

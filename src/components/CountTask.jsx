@@ -1,8 +1,15 @@
-import { useState, memo } from "react";
+import { memo } from "react";
+import { useClearTasks } from "../hooks/useTasks.js";
 
-const CountTask = ({ tasks, clearTasks }) => {
+const CountTask = ({ tasks }) => {
   console.log("render CountTask");
-  const notIsDone = tasks.filter((item) => !item.isDone);
+
+  const clearMutation = useClearTasks();
+  const clearTasks = () => {
+    clearMutation.mutate(tasks);
+  };
+
+  const notIsDone = tasks.filter((item) => !item.isCompleted);
   const count = notIsDone.length;
 
   return (

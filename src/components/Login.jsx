@@ -1,17 +1,13 @@
-import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Input } from "antd";
-import { logIn } from "../server/apiTodo.js";
-import { useNavigate } from "react-router";
-import useAuth from "../hooks/useAuth.jsx";
+
 import "../styles/Register.css";
 import "../styles/base.css";
+import { useLogin } from "../hooks/useAuth.js";
 
 const Login = () => {
-  const navigate = useNavigate();
-  const { saveToken } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [errorServer, setErrorServer] = useState("");
+  const loginMutation = useLogin();
+  const { isPending, isError, error } = loginMutation;
 
   const {
     handleSubmit,
@@ -20,21 +16,7 @@ const Login = () => {
   } = useForm();
 
   const onSubmit = async (formData) => {
-    setLoading(true);
-    try {
-      const res = await logIn.log(formData);
-
-      if (res.token) {
-        saveToken(res.token);
-        navigate("/");
-      } else {
-        setErrorServer("Токен не получен");
-      }
-    } catch (error) {
-      console.log(error);
-      setErrorServer(error.message);
-    }
-    setLoading(false);
+    loginMutation.mutate(formData);
   };
   return (
     <div className="registration-form">
@@ -78,13 +60,12 @@ const Login = () => {
             )}
           />
         </div>
-        {errorServer && (
-          <p className="registration-form__error">{errorServer}</p>
-        )}
+
         <button type="submit" className="registration-form__button">
           Войти
         </button>
-        {loading && <p className="registration-form__loading">Загрузка...</p>}
+        {isPending && <p className="registration-form__loading">Загрузка...</p>}
+        {isError && <p className="registration-form__error">{error.message}</p>}
       </form>
     </div>
   );

@@ -1,89 +1,41 @@
-import { useCallback, useEffect, useState } from "react";
 import Header from "./components/Header.jsx";
 import InputText from "./components/InputText.jsx";
 import TodoList from "./components/TodoList.jsx";
 import CountTask from "./components/CountTask.jsx";
-import { Route, Routes, Link } from "react-router";
+import { Route, Routes } from "react-router";
 import RegistrationForm from "./components/RegistrationForm.jsx";
 import Login from "./components/Login.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import { apiTodo } from "./server/apiTodo.js";
 import "./styles/App.css";
+import { useQuery } from "@tanstack/react-query";
+import { useDeleteTask, useDoneCheck, useEditTask } from "./hooks/useTasks.js";
 
 function App() {
-  const [tasks, setTasks] = useState([]);
+  const {
+    data: tasks = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["tasks"],
+    queryFn: apiTodo.getTasks,
+  });
+  const deleteMutation = useDeleteTask();
+  const doneMutation = useDoneCheck();
+  const editMutation = useEditTask();
 
-  const getTasks = useCallback(async () => {
-    try {
-      const data = await apiTodo.getTasks();
-      setTasks(data);
-    } catch (error) {
-      console.log(error.message);
-    }
-  }, []);
+  const deleteTask = (id) => {
+    deleteMutation.mutate(id);
+  };
 
-  useEffect(() => {
-    getTasks();
-  }, []);
+  const isDoneCheck = (id) => {
+    doneMutation.mutate(id);
+  };
 
-  const deleteTask = useCallback(async (id) => {
-    try {
-      const res = await apiTodo.deleteTask(id);
-      if (res) {
-        setTasks((prev) => prev.filter((item) => item.id !== id));
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  }, []);
-
-  const isDoneCheck = useCallback(async (id) => {
-    try {
-      const res = await apiTodo.isDoneCheck(id);
-
-      if (res) {
-        console.log("чек на сервере");
-
-        setTasks((tasks) =>
-          tasks.map((item) => {
-            if (item.id == id) {
-              return { ...item, isDone: !item.isDone };
-            }
-            return { ...item };
-          }),
-        );
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  }, []);
-
-  const editTask = useCallback(async (id, newTitle) => {
-    try {
-      const res = await apiTodo.editTask(id, newTitle);
-
-      if (res) {
-        console.log("меняем таску");
-
-        setTasks((tasks) =>
-          tasks.map((item) => {
-            if (item.id === id) {
-              return { ...item, title: newTitle };
-            }
-            return item;
-          }),
-        );
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  }, []);
-
-  const clearTasks = useCallback(async () => {
-    const res = await apiTodo.clearTasks(tasks);
-    console.log("удалены:", res);
-    setTasks(tasks.filter((task) => !task.isDone));
-  }, []);
+  const editTask = (id, title) => {
+    editMutation.mutate({ id, title });
+  };
 
   return (
     <>
@@ -96,19 +48,21 @@ function App() {
             element={
               <div>
                 <Header />
-                <InputText tasks={tasks} setTasks={setTasks} />
+                <InputText />
                 <TodoList
                   tasks={tasks}
                   deleteTask={deleteTask}
                   isDoneCheck={isDoneCheck}
                   editTask={editTask}
                 />
-                <CountTask tasks={tasks} clearTasks={clearTasks} />
+                <CountTask tasks={tasks} />
               </div>
             }
           />
         </Route>
       </Routes>
+      {isLoading && <p>Loading...</p>}
+      {isError && <p>{error.message}</p>}
     </>
   );
 }
